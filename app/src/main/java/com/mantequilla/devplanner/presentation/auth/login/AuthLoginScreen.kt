@@ -35,7 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.mantequilla.devplanner.navigation.Screen
+import com.mantequilla.devplanner.navigation.AuthScreen
+import com.mantequilla.devplanner.navigation.Graph
 import com.mantequilla.devplanner.ui.theme.osFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,7 +108,7 @@ fun LoginScreen(navHostController: NavHostController) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(modifier = Modifier.fillMaxWidth(), onClick = {
-            navHostController.navigate(Screen.App.route)
+            navHostController.navigate(Graph.HOME)
         }) {
             Text(text = "Login")
         }
@@ -120,7 +121,7 @@ fun LoginScreen(navHostController: NavHostController) {
                     text = "Don't have account yet?",
                     style = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Light, fontSize = 16.sp)
                 )
-                TextButton(onClick = { navHostController.navigate(Screen.Auth.RegisterScreen.route) }) {
+                TextButton(onClick = { navHostController.navigate(AuthScreen.Register.route) }) {
                     Text(text = "Register Here")
                 }
             }

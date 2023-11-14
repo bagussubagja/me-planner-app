@@ -7,27 +7,23 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.mantequilla.devplanner.presentation.auth.login.LoginScreen
 import com.mantequilla.devplanner.presentation.auth.register.RegisterScreen
-import com.mantequilla.devplanner.presentation.home.HomeScreen
+import com.mantequilla.devplanner.presentation.home.Home
+import com.mantequilla.devplanner.presentation.home.homescreen.HomeScreen
+import com.mantequilla.devplanner.presentation.home.settings.SettingScreen
 import com.mantequilla.devplanner.presentation.splash.SplashScreen
 
 @Composable
 fun NavGraph(navHostController: NavHostController) {
-    NavHost(navController = navHostController, startDestination = Screen.SplashScreen.route) {
-        composable(route = Screen.SplashScreen.route) {
-            SplashScreen(navHostController = navHostController)
-        }
-        navigation(route = Screen.Auth.route, startDestination = Screen.Auth.LoginScreen.route) {
-            composable(route = Screen.Auth.LoginScreen.route) {
-                LoginScreen(navHostController = navHostController)
-            }
-            composable(route = Screen.Auth.RegisterScreen.route) {
-                RegisterScreen(navHostController = navHostController)
-            }
-        }
-        navigation(route = Screen.App.route, startDestination = Screen.App.HomeScreen.route) {
-            composable(route = Screen.App.HomeScreen.route) {
-                HomeScreen(navHostController = navHostController)
-            }
+    NavHost(navController = navHostController, startDestination = Graph.AUTHENTICATION, route = Graph.ROOT) {
+        authNavGraph(navHostController)
+        composable(route = Graph.HOME) {
+            Home()
         }
     }
+}
+
+object Graph {
+    const val ROOT = "root_graph"
+    const val AUTHENTICATION = "auth_graph"
+    const val HOME = "home_graph"
 }
