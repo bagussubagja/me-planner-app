@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.mantequilla.devplanner"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -97,4 +97,5 @@ dependencies {
     // Room Database
     implementation("androidx.room:room-ktx:2.5.0")
     kapt("androidx.room:room-compiler:2.5.0")
+    implementation("com.github.mateusz800:Expandable-Compose-Calendar:1.0.0")
 }

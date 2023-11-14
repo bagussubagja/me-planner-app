@@ -1,8 +1,10 @@
 package com.mantequilla.devplanner.presentation.home
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomBarScreen (
@@ -15,9 +17,15 @@ sealed class BottomBarScreen (
         "Home",
         Icons.Default.Home
     )
+    object Calendar: BottomBarScreen(
+        "calendar",
+        "Calendar",
+        Icons.Filled.DateRange
+    )
     object Setting: BottomBarScreen(
         "setting",
         "Setting",
         Icons.Default.Settings
     )
+
 }
