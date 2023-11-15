@@ -4,7 +4,9 @@ import com.mantequilla.devplanner.data.model.auth.AuthModel
 import com.mantequilla.devplanner.data.model.task.TaskModel
 import com.mantequilla.devplanner.data.model.user.UserModel
 import com.mantequilla.devplanner.data.params.AuthParams
+import com.mantequilla.devplanner.data.params.TaskParams
 import com.mantequilla.devplanner.utils.Constants
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -21,13 +23,24 @@ interface Api {
     ): Response<AuthModel>
 
     @GET(Constants.USER_ENDPOINT)
-    suspend fun getUser(@Query("select") select: String): Response<List<UserModel>>
+    @Headers("apikey: ${Constants.API_KEY}")
+    suspend fun getUser(
+        @Query("select") select: String,
+        @Query("user_id") userId: String
+    ): Response<List<UserModel>>
 
     @GET(Constants.TASK_ENDPOINT)
     @Headers("apikey: ${Constants.API_KEY}")
     suspend fun getTasks(
         @Query("select") select: String,
         @Query("user_id") userId: String,
-        @Query("date") date: String
+        @Query("date") date: String,
+        @Query("order") order: String,
     ): Response<List<TaskModel>>
+
+    @POST(Constants.TASK_ENDPOINT)
+    @Headers("apikey: ${Constants.API_KEY}")
+    suspend fun addTask(
+        @Body taskParams: TaskParams
+    ) : Response<ResponseBody>
 }

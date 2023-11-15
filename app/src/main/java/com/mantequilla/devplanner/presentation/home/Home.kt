@@ -45,7 +45,12 @@ fun Home(navHostController: NavHostController = rememberNavController()) {
             }
         },
         content = { innerPadding ->
-            AppNavGraph(navHostController = navHostController, modifier = Modifier.padding(innerPadding), context)
+            AppNavGraph(
+                navHostController = navHostController,
+                modifier = Modifier.padding(innerPadding),
+                context,
+                innerPadding
+            )
         }
     )
 }
@@ -62,7 +67,6 @@ fun BottomBar(navHostController: NavHostController) {
     val screens = listOf(
         BottomBarScreen.Home,
         BottomBarScreen.Calendar,
-        BottomBarScreen.Setting
     )
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination

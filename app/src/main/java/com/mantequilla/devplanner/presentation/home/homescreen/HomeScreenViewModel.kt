@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val taskUseCase: TaskUseCase,
-    preferencesManager: PreferencesManager
+    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
     private val _state =
         MutableStateFlow<HomeScreenState<List<TaskItem>>>(HomeScreenState.loading())
@@ -28,19 +28,29 @@ class HomeScreenViewModel @Inject constructor(
     val isLoading = _isLoading.asStateFlow()
 
     init {
+        getData()
+    }
+
+    fun getData() {
         getTasksData(
             "*",
             "eq.${preferencesManager.getIdUserInfo(StorageKey.userId, "")}",
-            "eq.${Converter.getCurrentDate()}"
+            "eq.${Converter.getCurrentDate()}",
+            "time.asc"
         )
     }
 
-    fun getTasksData(select: String, userId: String, date: String) {
+    fun refreshData() {
+        _isLoading.value = true
+        getData()
+        _isLoading.value = false
+    }
+
+    private fun getTasksData(select: String, userId: String, date: String, order: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    _isLoading.value = true
-                    taskUseCase(select, userId, date).collect() { result ->
+                    taskUseCase(select, userId, date, order).collect() { result ->
                         when (result) {
                             is HomeScreenState.Loading -> {}
                             is HomeScreenState.SuccessFetchData -> {
@@ -54,8 +64,6 @@ class HomeScreenViewModel @Inject constructor(
                     }
                 } catch (e: Exception) {
                     _state.value = HomeScreenState.failed(Exception("Error GET Task"))
-                } finally {
-                    _isLoading.value = false
                 }
             }
         }

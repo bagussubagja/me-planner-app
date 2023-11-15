@@ -22,10 +22,4 @@ sealed class BottomBarScreen (
         "Calendar",
         Icons.Filled.DateRange
     )
-    object Setting: BottomBarScreen(
-        "setting",
-        "Setting",
-        Icons.Default.Settings
-    )
-
 }

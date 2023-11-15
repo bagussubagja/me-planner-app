@@ -13,11 +13,12 @@ class TaskUseCase @Inject constructor(
     operator fun invoke(
         select: String,
         userId: String,
-        date: String
+        date: String,
+        order: String
     ): Flow<HomeScreenState<List<TaskItem>>> = flow {
         try {
             emit(HomeScreenState.loading())
-            val task = taskRepository.getTasks(select, userId, date)
+            val task = taskRepository.getTasks(select, userId, date, order)
             emit(HomeScreenState.success(task))
         } catch (e: Exception) {
             emit(HomeScreenState.failed(e))

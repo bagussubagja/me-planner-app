@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -48,27 +50,24 @@ import com.mantequilla.devplanner.utils.PreferencesManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navHostController: NavHostController, context: Context) {
-    val preferencesManager = remember { PreferencesManager(context) }
+fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValues) {
     val homeViewModel: HomeScreenViewModel = hiltViewModel()
     val homeState by homeViewModel.state.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
+    LaunchedEffect(key1 = homeState) {
+       homeViewModel.getData()
+    }
     Scaffold {
         SwipeRefresh(
             state = swipeRefreshState,
-            onRefresh = {
-                homeViewModel.getTasksData(
-                    "*",
-                    "eq.${preferencesManager.getIdUserInfo(com.mantequilla.devplanner.utils.StorageKey.userId, "")}",
-                    "eq.${com.mantequilla.devplanner.utils.Converter.Companion.getCurrentDate()}"
-                )
-            }
+            onRefresh = homeViewModel::refreshData
         ) {
             LazyColumn(
                 modifier = Modifier
                     .padding(it)
                     .padding(12.dp)
+                    .padding(paddingValues)
             ) {
                 item {
                     HeaderSection(navHostController)

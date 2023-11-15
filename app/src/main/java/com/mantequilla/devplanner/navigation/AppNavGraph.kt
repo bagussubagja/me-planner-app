@@ -1,6 +1,7 @@
 package com.mantequilla.devplanner.navigation
 
 import android.content.Context
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -12,20 +13,17 @@ import com.mantequilla.devplanner.presentation.addtask.AddTaskScreen
 import com.mantequilla.devplanner.presentation.calendar.CalendarScreen
 import com.mantequilla.devplanner.presentation.home.BottomBarScreen
 import com.mantequilla.devplanner.presentation.home.homescreen.HomeScreen
-import com.mantequilla.devplanner.presentation.home.settings.SettingScreen
 
 @Composable
-fun AppNavGraph (navHostController: NavHostController, modifier: Modifier, context: Context) {
+fun AppNavGraph (navHostController: NavHostController, modifier: Modifier, context: Context, paddingValues: PaddingValues) {
    NavHost(navController = navHostController, startDestination = BottomBarScreen.Home.route, route = Graph.HOME) {
        composable(route = BottomBarScreen.Home.route) {
-           HomeScreen(navHostController = navHostController, context)
+           HomeScreen(navHostController = navHostController, paddingValues = paddingValues)
        }
        composable(route = BottomBarScreen.Calendar.route) {
-           CalendarScreen()
+           CalendarScreen(navHostController, context, paddingValues)
        }
-       composable(route = BottomBarScreen.Setting.route) {
-           SettingScreen(navHostController = navHostController)
-       }
+       contentAppNavGraph(navHostController)
        authNavGraph(navHostController, context)
    }
 }
