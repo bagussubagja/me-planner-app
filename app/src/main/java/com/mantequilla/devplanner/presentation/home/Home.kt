@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -28,23 +29,23 @@ import com.mantequilla.devplanner.navigation.ContentScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(navHostController: NavHostController = rememberNavController()) {
+    val context = LocalContext.current
     Scaffold(
         bottomBar = { BottomBar(navHostController = navHostController) },
         floatingActionButton = {
-            // Example FAB with navigationBarsPadding
             if (isHomeDestination(navHostController)) {
                 FloatingActionButton(
                     onClick = { navHostController.navigate(ContentScreen.AddTask.route) },
                     modifier = Modifier
                         .navigationBarsPadding()
-                        .padding(16.dp) // You can adjust the padding as needed
+                        .padding(16.dp)
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
                 }
             }
         },
         content = { innerPadding ->
-            AppNavGraph(navHostController = navHostController, modifier = Modifier.padding(innerPadding))
+            AppNavGraph(navHostController = navHostController, modifier = Modifier.padding(innerPadding), context)
         }
     )
 }

@@ -23,7 +23,7 @@ object RetrofitModule {
     }
     @Singleton
     @Provides
-    fun provideGameApi(retrofit: Retrofit): Api {
+    fun provideApi(retrofit: Retrofit): Api {
         return retrofit.create(Api::class.java)
     }
 

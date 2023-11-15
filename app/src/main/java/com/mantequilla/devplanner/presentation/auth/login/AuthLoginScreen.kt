@@ -1,5 +1,6 @@
 package com.mantequilla.devplanner.presentation.auth.login
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,15 +38,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.mantequilla.devplanner.data.params.AuthParams
 import com.mantequilla.devplanner.navigation.AuthScreen
 import com.mantequilla.devplanner.navigation.Graph
 import com.mantequilla.devplanner.ui.theme.osFontFamily
+import com.mantequilla.devplanner.utils.PreferencesManager
+import com.mantequilla.devplanner.utils.StorageKey
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navHostController: NavHostController) {
+fun LoginScreen(navHostController: NavHostController, context: Context) {
     val authLoginViewModel: AuthLoginViewModel = hiltViewModel()
     val authLoginState by authLoginViewModel.state.collectAsState()
+    val preferencesManager = remember { PreferencesManager(context) }
     var emailText by remember {
         mutableStateOf("")
     }
@@ -52,6 +60,33 @@ fun LoginScreen(navHostController: NavHostController) {
     }
     var visiblePassword by remember {
         mutableStateOf(false)
+    }
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(key1 = authLoginState) {
+        when(authLoginState) {
+            is AuthLoginState.Loading -> {
+                isLoading = true
+            }
+            is AuthLoginState.LoginFailed -> {
+                isLoading = true
+                delay(2000L)
+                isLoading = false
+            }
+            is AuthLoginState.LoginSuccess -> {
+                isLoading = true
+                delay(2000L)
+                isLoading = false
+                preferencesManager.saveUserLoginInfo(StorageKey.userLoginInfo, true)
+                navHostController.navigate(Graph.HOME) {
+                    popUpTo(Graph.AUTHENTICATION) {
+                        inclusive = true
+                    }
+                }
+            }
+            is AuthLoginState.Initial -> {}
+        }
     }
     Column(
         modifier = Modifier
@@ -107,12 +142,21 @@ fun LoginScreen(navHostController: NavHostController) {
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(modifier = Modifier.fillMaxWidth(), onClick = {
-            navHostController.navigate(Graph.HOME)
-        }) {
-            Text(text = "Login")
+        if (isLoading) {
+            Box (modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                val authParams = AuthParams(email = emailText, password = passwordText)
+                authLoginViewModel.authLogin(authParams)
+            }) {
+                Text(text = "Login")
+            }
         }
-        Box(modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier
+            .padding(vertical = 12.dp)
+            .fillMaxWidth(), contentAlignment = Alignment.Center) {
             Row (
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
