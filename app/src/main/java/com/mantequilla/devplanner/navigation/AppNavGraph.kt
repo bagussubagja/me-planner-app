@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.mantequilla.devplanner.presentation.addtask.AddTaskScreen
 import com.mantequilla.devplanner.presentation.calendar.CalendarScreen
+import com.mantequilla.devplanner.presentation.detail.DetailScreen
 import com.mantequilla.devplanner.presentation.home.BottomBarScreen
 import com.mantequilla.devplanner.presentation.home.homescreen.HomeScreen
 
@@ -33,9 +34,13 @@ fun NavGraphBuilder.contentAppNavGraph(navHostController: NavHostController) {
         composable(route = ContentScreen.AddTask.route) {
             AddTaskScreen(navHostController = navHostController)
         }
+        composable(route = ContentScreen.DetailScreen.route) {
+            DetailScreen(navHostController = navHostController)
+        }
     }
 }
 
 sealed class ContentScreen(val route: String) {
     object AddTask: ContentScreen("ADD_TASK")
+    object DetailScreen: ContentScreen("DETAIL_SCREEN")
 }

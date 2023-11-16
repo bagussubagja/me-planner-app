@@ -2,6 +2,7 @@ package com.mantequilla.devplanner.presentation.home.homescreen
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.mantequilla.devplanner.domain.item.TaskItem
+import com.mantequilla.devplanner.navigation.ContentScreen
 import com.mantequilla.devplanner.ui.theme.greenAccentDark
 import com.mantequilla.devplanner.ui.theme.greenAccentLight
 import com.mantequilla.devplanner.ui.theme.osFontFamily
@@ -136,7 +138,8 @@ fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValue
                                     task.priority!!,
                                     task.title!!,
                                     task.time!!,
-                                    task.tag!!
+                                    task.tag!!,
+                                    navHostController
                                 )
                             }
                         }
@@ -152,7 +155,8 @@ private fun CardTodoList(
     priority: String,
     title: String,
     time: String,
-    tag: List<String?>
+    tag: List<String?>,
+    navHostController: NavHostController
 ) {
     fun getBackgroundColor(priority: String): Color {
         return when (priority) {
@@ -176,6 +180,9 @@ private fun CardTodoList(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
+            .clickable {
+                navHostController.navigate(ContentScreen.DetailScreen.route)
+            }
             .background(getBackgroundColor(priority), shape = RoundedCornerShape(12.dp))
     ) {
         Row(
