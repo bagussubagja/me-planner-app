@@ -291,7 +291,7 @@ private fun HeaderSection(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Dev Planner",
+            text = "Me Planner",
             style = TextStyle(
                 fontFamily = osFontFamily,
                 fontWeight = FontWeight.Bold,

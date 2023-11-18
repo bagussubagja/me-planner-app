@@ -41,8 +41,6 @@ import com.mantequilla.devplanner.ui.theme.osFontFamily
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navHostController: NavHostController) {
-    val authLoginViewModel: AuthLoginViewModel = hiltViewModel()
-    val authLoginState by authLoginViewModel.state.collectAsState()
     var emailText by remember {
         mutableStateOf("")
     }
@@ -59,7 +57,7 @@ fun RegisterScreen(navHostController: NavHostController) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Dev Planner - Your daily assistant",
+            text = "Me Planner - Your daily assistant",
             fontFamily = osFontFamily,
             fontWeight = FontWeight.Normal,
             color = Color.Gray

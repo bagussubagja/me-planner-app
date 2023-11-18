@@ -95,7 +95,7 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Dev Planner - Your daily assistant",
+            text = "Me Planner - Your daily assistant",
             fontFamily = osFontFamily,
             fontWeight = FontWeight.Normal,
             color = Color.Gray
