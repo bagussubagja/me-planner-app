@@ -28,32 +28,30 @@ class HomeScreenViewModel @Inject constructor(
     val isLoading = _isLoading.asStateFlow()
 
     init {
-        getData()
+        getData(false)
     }
 
     fun logout () {
         preferencesManager.clearAllPreferences()
     }
 
-    fun getData() {
+    fun getData(isRefresh: Boolean) {
         getTasksData(
             "*",
             "eq.${preferencesManager.getIdUserInfo(StorageKey.userId, "")}",
             "eq.${Converter.getCurrentDate()}",
-            "time.asc"
+            "time.asc",
+            isRefresh =  isRefresh,
         )
     }
 
-    fun refreshData() {
-        _isLoading.value = true
-        getData()
-        _isLoading.value = false
-    }
-
-    private fun getTasksData(select: String, userId: String, date: String, order: String) {
+    private fun getTasksData(select: String, userId: String, date: String, order: String, isRefresh: Boolean) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
+                    if (isRefresh) {
+                        _isLoading.value = true
+                    }
                     taskUseCase(select, userId, date, order).collect() { result ->
                         when (result) {
                             is HomeScreenState.Loading -> {}
@@ -68,6 +66,9 @@ class HomeScreenViewModel @Inject constructor(
                     }
                 } catch (e: Exception) {
                     _state.value = HomeScreenState.failed(Exception("Error GET Task"))
+                }
+                if (isRefresh) {
+                    _isLoading.value = false
                 }
             }
         }

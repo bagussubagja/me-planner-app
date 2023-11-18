@@ -18,6 +18,14 @@ class Services @Inject constructor(private val api: Api) {
             authLogin.body()!!
         }
     }
+
+    suspend fun authRegister(authParams: AuthParams) : AuthModel {
+        return withContext(Dispatchers.IO) {
+            val authRegister = api.authRegister(authParams)
+            authRegister.body()!!
+        }
+    }
+
     suspend fun getUser(select: String, userId: String): List<UserModel> {
         return withContext(Dispatchers.Main) {
             val user = api.getUser(select, userId)

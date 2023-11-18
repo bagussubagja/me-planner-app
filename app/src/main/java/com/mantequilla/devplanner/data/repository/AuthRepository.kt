@@ -12,6 +12,11 @@ class AuthRepository @Inject constructor(private val services: Services) {
     suspend fun authLogin(authParams: AuthParams): AuthItem {
         return services.authLogin(authParams).toAuthItem()
     }
+
+    suspend fun authRegister(authParams: AuthParams): AuthItem {
+        return services.authRegister(authParams).toAuthItem()
+    }
+
     suspend fun getUser(select: String, userId: String): List<UserItem> {
         return services.getUser(select, userId).map { user->
             user.toUserItem()

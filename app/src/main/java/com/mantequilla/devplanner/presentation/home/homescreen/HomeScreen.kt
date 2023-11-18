@@ -62,12 +62,14 @@ fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValue
     val isLoading by homeViewModel.isLoading.collectAsState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
     LaunchedEffect(key1 = homeState) {
-        homeViewModel.getData()
+        homeViewModel.getData(false)
     }
     Scaffold {
         SwipeRefresh(
             state = swipeRefreshState,
-            onRefresh = homeViewModel::refreshData
+            onRefresh = {
+                homeViewModel.getData(true)
+            }
         ) {
             LazyColumn(
                 modifier = Modifier

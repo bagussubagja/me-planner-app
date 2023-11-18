@@ -7,5 +7,6 @@ class Constants {
         const val AUTH_LOGIN_ENDPOINT = "/auth/v1/token"
         const val USER_ENDPOINT = "/rest/v1/users"
         const val TASK_ENDPOINT = "/rest/v1/task"
+        const val REGISTER_ENDPOINT = "/auth/v1/signup"
     }
 }

@@ -23,6 +23,13 @@ interface Api {
         @Query("grant_type") grantType: String = "password"
     ): Response<AuthModel>
 
+    @POST(Constants.REGISTER_ENDPOINT)
+    @Headers("apikey: ${Constants.API_KEY}")
+    suspend fun authRegister(
+        @Body authParams: AuthParams,
+    ): Response<AuthModel>
+
+
     @GET(Constants.USER_ENDPOINT)
     @Headers("apikey: ${Constants.API_KEY}")
     suspend fun getUser(

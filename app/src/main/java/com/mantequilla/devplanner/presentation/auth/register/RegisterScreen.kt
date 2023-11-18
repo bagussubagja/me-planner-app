@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,12 +36,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.mantequilla.devplanner.presentation.auth.login.AuthLoginViewModel
+import com.mantequilla.devplanner.data.params.AuthParams
+import com.mantequilla.devplanner.navigation.Graph
 import com.mantequilla.devplanner.ui.theme.osFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navHostController: NavHostController) {
+    val registerViewModel: AuthRegisterViewModel = hiltViewModel()
+    val state by registerViewModel.state.collectAsState()
+    LaunchedEffect(key1 = state) {
+        when (state) {
+            is AuthRegisterState.Initial -> {}
+            is AuthRegisterState.Loading -> {}
+            is AuthRegisterState.RegisterFailed -> {}
+            is AuthRegisterState.RegisterSuccess -> {
+                navHostController.navigate(Graph.HOME)
+            }
+        }
+    }
     var emailText by remember {
         mutableStateOf("")
     }
@@ -104,17 +118,28 @@ fun RegisterScreen(navHostController: NavHostController) {
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(modifier = Modifier.fillMaxWidth(), onClick = { /*TODO*/ }) {
+        Button(modifier = Modifier.fillMaxWidth(), onClick = {
+            val authParams = AuthParams(email = emailText, password = passwordText)
+            registerViewModel.authRegister(authParams)
+        }) {
             Text(text = "Register")
         }
-        Box(modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Row (
+        Box(
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+                .fillMaxWidth(), contentAlignment = Alignment.Center
+        ) {
+            Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Already have an account?",
-                    style = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Light, fontSize = 16.sp)
+                    style = TextStyle(
+                        fontFamily = osFontFamily,
+                        fontWeight = FontWeight.Light,
+                        fontSize = 16.sp
+                    )
                 )
                 TextButton(onClick = {
                     navHostController.popBackStack()
