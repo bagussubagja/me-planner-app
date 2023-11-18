@@ -1,6 +1,8 @@
 package com.mantequilla.devplanner.presentation.auth.login
 
 import android.content.Context
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +30,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -38,6 +42,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.mantequilla.devplanner.R
 import com.mantequilla.devplanner.data.params.AuthParams
 import com.mantequilla.devplanner.navigation.AuthScreen
 import com.mantequilla.devplanner.navigation.Graph
@@ -46,7 +55,7 @@ import com.mantequilla.devplanner.utils.PreferencesManager
 import com.mantequilla.devplanner.utils.StorageKey
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(navHostController: NavHostController, context: Context) {
     val authLoginViewModel: AuthLoginViewModel = hiltViewModel()
@@ -65,15 +74,17 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
         mutableStateOf(false)
     }
     LaunchedEffect(key1 = authLoginState) {
-        when(authLoginState) {
+        when (authLoginState) {
             is AuthLoginState.Loading -> {
                 isLoading = true
             }
+
             is AuthLoginState.LoginFailed -> {
                 isLoading = true
                 delay(2000L)
                 isLoading = false
             }
+
             is AuthLoginState.LoginSuccess -> {
                 isLoading = true
                 delay(2000L)
@@ -85,13 +96,32 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                     }
                 }
             }
+
             is AuthLoginState.Initial -> {}
         }
     }
+    var isPlaying by remember { mutableStateOf(true) }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.auth))
+    val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
+    LaunchedEffect(key1 = progress) {
+        if (progress == 0f) {
+            isPlaying = true
+        } else if (progress == 1f) {
+            isPlaying = false
+        }
+    }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val interactionSource = remember { MutableInteractionSource() }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                keyboardController?.hide()
+            },
         verticalArrangement = Arrangement.Center
     ) {
         Text(
@@ -108,6 +138,14 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                 fontFamily = osFontFamily,
                 fontWeight = FontWeight.Bold
             ),
+        )
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier
+                .height(250.dp)
+                .fillMaxWidth(),
+            alignment = Alignment.Center
         )
         Spacer(modifier = Modifier.height(24.dp))
         OutlinedTextField(
@@ -143,27 +181,36 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         if (isLoading) {
-            Box (modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         } else {
-            Button(modifier = Modifier.fillMaxWidth(), onClick = {
-                val authParams = AuthParams(email = emailText, password = passwordText)
-                authLoginViewModel.authLogin(authParams)
-            }) {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                enabled = emailText.isNotEmpty() && passwordText.isNotEmpty(),
+                onClick = {
+                    val authParams = AuthParams(email = emailText, password = passwordText)
+                    authLoginViewModel.authLogin(authParams)
+                }) {
                 Text(text = "Login")
             }
         }
-        Box(modifier = Modifier
-            .padding(vertical = 12.dp)
-            .fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Row (
+        Box(
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+                .fillMaxWidth(), contentAlignment = Alignment.Center
+        ) {
+            Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Don't have account yet?",
-                    style = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Light, fontSize = 16.sp)
+                    style = TextStyle(
+                        fontFamily = osFontFamily,
+                        fontWeight = FontWeight.Light,
+                        fontSize = 16.sp
+                    )
                 )
                 TextButton(onClick = { navHostController.navigate(AuthScreen.Register.route) }) {
                     Text(text = "Register Here")

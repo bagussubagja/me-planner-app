@@ -29,6 +29,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,9 +40,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.gson.Gson
+import com.mantequilla.devplanner.R
 import com.mantequilla.devplanner.domain.item.TaskItem
 import com.mantequilla.devplanner.navigation.ContentScreen
 import com.mantequilla.devplanner.navigation.Graph
@@ -61,6 +68,9 @@ fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValue
     val homeState by homeViewModel.state.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
+    val isPlaying by remember { mutableStateOf(true) }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty))
+    val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
     LaunchedEffect(key1 = homeState) {
         homeViewModel.getData(false)
     }
@@ -131,11 +141,23 @@ fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValue
                             (homeState as HomeScreenState.SuccessFetchData<List<TaskItem>>).data
                         if (tasks.isEmpty()) {
                             item {
-                                Box(
+                                Column(
                                     modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Text(text = "Task not found")
+                                    LottieAnimation(
+                                        composition = composition,
+                                        progress = { progress },
+                                        modifier = Modifier
+                                            .height(250.dp)
+                                            .fillMaxWidth(),
+                                        alignment = Alignment.Center
+                                    )
+                                    Text(
+                                        text = "Task not found",
+                                        modifier = Modifier,
+                                        style = TextStyle(fontFamily = osFontFamily)
+                                    )
                                 }
                             }
                         } else {

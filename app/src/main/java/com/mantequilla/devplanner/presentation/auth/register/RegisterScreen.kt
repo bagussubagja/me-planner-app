@@ -1,5 +1,7 @@
 package com.mantequilla.devplanner.presentation.auth.register
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,8 +28,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -36,11 +40,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.mantequilla.devplanner.R
 import com.mantequilla.devplanner.data.params.AuthParams
 import com.mantequilla.devplanner.navigation.Graph
 import com.mantequilla.devplanner.ui.theme.osFontFamily
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun RegisterScreen(navHostController: NavHostController) {
     val registerViewModel: AuthRegisterViewModel = hiltViewModel()
@@ -64,10 +73,21 @@ fun RegisterScreen(navHostController: NavHostController) {
     var visiblePassword by remember {
         mutableStateOf(false)
     }
+    val isPlaying by remember { mutableStateOf(true) }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.auth))
+    val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val interactionSource = remember { MutableInteractionSource() }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                keyboardController?.hide()
+            },
         verticalArrangement = Arrangement.Center
     ) {
         Text(
@@ -86,6 +106,14 @@ fun RegisterScreen(navHostController: NavHostController) {
             ),
         )
         Spacer(modifier = Modifier.height(24.dp))
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier
+                .height(250.dp)
+                .fillMaxWidth(),
+            alignment = Alignment.Center
+        )
         OutlinedTextField(
             value = emailText,
             singleLine = true,
@@ -118,10 +146,14 @@ fun RegisterScreen(navHostController: NavHostController) {
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(modifier = Modifier.fillMaxWidth(), onClick = {
-            val authParams = AuthParams(email = emailText, password = passwordText)
-            registerViewModel.authRegister(authParams)
-        }) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            enabled = emailText.isNotEmpty() && passwordText.isNotEmpty(),
+            onClick = {
+                val authParams = AuthParams(email = emailText, password = passwordText)
+                registerViewModel.authRegister(authParams)
+            }
+        ) {
             Text(text = "Register")
         }
         Box(

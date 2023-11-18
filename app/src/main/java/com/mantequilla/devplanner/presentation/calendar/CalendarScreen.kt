@@ -1,7 +1,6 @@
 package com.mantequilla.devplanner.presentation.calendar
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +34,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.mantequilla.devplanner.R
 import com.mantequilla.devplanner.domain.item.TaskItem
 import com.mantequilla.devplanner.ui.theme.greenAccentDark
 import com.mantequilla.devplanner.ui.theme.greenAccentLight
@@ -44,19 +48,23 @@ import com.mantequilla.devplanner.ui.theme.pinkAccentLight
 import com.mantequilla.devplanner.ui.theme.yellowAccentDark
 import com.mantequilla.devplanner.ui.theme.yellowAccentLight
 import com.mantequilla.devplanner.utils.Converter
-import com.mantequilla.devplanner.utils.PreferencesManager
-import com.mantequilla.devplanner.utils.StorageKey
 
 @Composable
-fun CalendarScreen(navHostController: NavHostController, context: Context, paddingValues: PaddingValues) {
-    val preferencesManager = PreferencesManager(context)
+fun CalendarScreen(
+    navHostController: NavHostController,
+    context: Context,
+    paddingValues: PaddingValues
+) {
     val calendarViewModel: CalendarViewModel = hiltViewModel()
     val state by calendarViewModel.state.collectAsState()
     var today by remember { mutableStateOf(Converter.getCurrentDate()) }
+    val isPlaying by remember { mutableStateOf(true) }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty))
+    val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
     LaunchedEffect(key1 = today) {
         calendarViewModel.refreshData(today)
     }
-    LazyColumn (
+    LazyColumn(
         modifier = Modifier.padding(paddingValues)
     ) {
         item {
@@ -87,11 +95,23 @@ fun CalendarScreen(navHostController: NavHostController, context: Context, paddi
                 val taskByDate = (state as CalendarState.SuccessFetchData<List<TaskItem>>).data
                 if (taskByDate.isEmpty()) {
                     item {
-                        Box(
+                        Column(
                             modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(text = "Task Not Found", style = TextStyle(fontFamily = osFontFamily))
+                            LottieAnimation(
+                                composition = composition,
+                                progress = { progress },
+                                modifier = Modifier
+                                    .height(250.dp)
+                                    .fillMaxWidth(),
+                                alignment = Alignment.Center
+                            )
+                            Text(
+                                text = "Task not found",
+                                modifier = Modifier,
+                                style = TextStyle(fontFamily = osFontFamily)
+                            )
                         }
                     }
                 } else {
