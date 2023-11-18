@@ -13,12 +13,13 @@ class TaskRepository @Inject constructor(private val services: Services) {
             it.toTaskItem()
         }
     }
-
     suspend fun addTask(taskParams: TaskParams): ResponseBody {
         return services.addTask(taskParams)
     }
-
     suspend fun updateTask(taskParams: TaskParams, id: String): Int {
         return services.updateTask(taskParams, id)
+    }
+    suspend fun deleteTask(id: String) : Int {
+        return services.deleteTask(id)
     }
 }

@@ -9,6 +9,7 @@ import com.mantequilla.devplanner.utils.Constants
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.PATCH
@@ -56,6 +57,12 @@ interface Api {
     @Headers("apikey: ${Constants.API_KEY}")
     suspend fun updateTask(
         @Body taskParams: TaskParams,
+        @Query("id") id: String
+    ) : Response<Int>
+
+    @DELETE(Constants.TASK_ENDPOINT)
+    @Headers("apikey: ${Constants.API_KEY}")
+    suspend fun deleteTask(
         @Query("id") id: String
     ) : Response<Int>
 }

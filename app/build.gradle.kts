@@ -106,4 +106,6 @@ dependencies {
     implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.0.2")
     // Lottie
     implementation("com.airbnb.android:lottie-compose:6.1.0")
+    // Permission
+    implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
 }

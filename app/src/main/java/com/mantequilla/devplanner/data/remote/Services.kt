@@ -53,4 +53,11 @@ class Services @Inject constructor(private val api: Api) {
             updatedTask.code()
         }
     }
+
+    suspend fun deleteTask(id: String) : Int {
+        return withContext(Dispatchers.IO) {
+            val deletedTask = api.deleteTask(id)
+            deletedTask.code()
+        }
+    }
 }

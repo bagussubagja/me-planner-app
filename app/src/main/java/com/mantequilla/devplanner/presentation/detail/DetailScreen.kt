@@ -1,6 +1,5 @@
 package com.mantequilla.devplanner.presentation.detail
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenuItem
@@ -26,7 +27,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,11 +44,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.mantequilla.devplanner.data.params.TaskParams
 import com.mantequilla.devplanner.navigation.models.TaskModelNav
-import com.mantequilla.devplanner.presentation.addtask.AddTaskState
-import com.mantequilla.devplanner.presentation.addtask.AddTaskViewModel
 import com.mantequilla.devplanner.ui.theme.greenAccentDark
 import com.mantequilla.devplanner.ui.theme.greenAccentDarker
 import com.mantequilla.devplanner.ui.theme.osFontFamily
+import com.mantequilla.devplanner.ui.theme.pinkAccentDark
 import com.mantequilla.devplanner.utils.Converter
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -69,8 +68,9 @@ fun DetailScreen(navHostController: NavHostController, taskParams: TaskModelNav)
     var tagTask by remember { mutableStateOf(taskParams.tag?.joinToString(", ")) }
     val detailViewModel: DetailViewModel = hiltViewModel()
     val detailState by detailViewModel.state.collectAsState()
+    var openDialog by remember { mutableStateOf(false) }
     LaunchedEffect(key1 = detailState) {
-        when(detailState) {
+        when (detailState) {
             is DetailState.ErrorUpdateData -> {}
             is DetailState.Loading -> {}
             is DetailState.SuccessUpdateData -> {
@@ -302,6 +302,57 @@ fun DetailScreen(navHostController: NavHostController, taskParams: TaskModelNav)
             ) {
                 Text(text = "Update Task", style = TextStyle(fontFamily = osFontFamily))
             }
+            Spacer(modifier = Modifier.height(12.dp))
+            ElevatedButton(
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = pinkAccentDark,
+                    contentColor = Color.White
+                ),
+                onClick = {
+                    openDialog = true
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = "Delete Task", style = TextStyle(fontFamily = osFontFamily))
+            }
         }
+    }
+    if (openDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                openDialog = false
+            },
+            title = {
+                Text(text = "Attention!")
+            },
+            text = {
+                Text(text = "Are you sure to delete this task?")
+            },
+            confirmButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = pinkAccentDark
+                    ),
+                    onClick = {
+                        detailViewModel.deleteTask("eq.${taskParams.id}")
+                        openDialog = false
+                    }
+                ) {
+                    Text(text = "Yes")
+                }
+            },
+            dismissButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = greenAccentDark
+                    ),
+                    onClick = {
+                        openDialog = false
+                    }
+                ) {
+                    Text(text = "No")
+                }
+            },
+        )
     }
 }
