@@ -10,12 +10,15 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -25,6 +28,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mantequilla.devplanner.navigation.AppNavGraph
 import com.mantequilla.devplanner.navigation.ContentScreen
+import com.mantequilla.devplanner.ui.theme.greenAccentDark
+import com.mantequilla.devplanner.ui.theme.greenAccentDarker
+import com.mantequilla.devplanner.ui.theme.greenAccentLight
+import com.mantequilla.devplanner.ui.theme.osFontFamily
+import com.mantequilla.devplanner.ui.theme.yellowAccentDark
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +43,8 @@ fun Home(navHostController: NavHostController = rememberNavController()) {
         floatingActionButton = {
             if (isHomeDestination(navHostController)) {
                 FloatingActionButton(
+                    containerColor = greenAccentDark,
+                    contentColor = Color.White,
                     onClick = { navHostController.navigate(ContentScreen.AddTask.route) },
                     modifier = Modifier
                         .navigationBarsPadding()
@@ -71,7 +81,9 @@ fun BottomBar(navHostController: NavHostController) {
     val currentDestination = navBackStackEntry?.destination
     val bottomBarDestination = screens.any { it.route == currentDestination?.route }
     if (bottomBarDestination) {
-        NavigationBar {
+        NavigationBar(
+            containerColor = greenAccentDark,
+        ) {
             screens.forEach {
                 AddItem(
                     screen = it,
@@ -91,14 +103,24 @@ fun RowScope.AddItem(
 ) {
     NavigationBarItem(
         label = {
-            Text(text = screen.title)
+            Text(
+                text = screen.title,
+                style = TextStyle(fontFamily = osFontFamily, color = Color.White)
+            )
         },
         icon = {
             Icon(
                 imageVector = screen.icon,
+                tint = Color.White,
                 contentDescription = "Navigation Icon"
             )
         },
+        alwaysShowLabel = true,
+        colors = NavigationBarItemDefaults.colors(
+            selectedIconColor = greenAccentDark,
+            selectedTextColor = Color.White,
+            indicatorColor = greenAccentDarker
+        ),
         selected = currentDestination?.hierarchy?.any {
             it.route == screen.route
         } == true,

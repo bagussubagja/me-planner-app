@@ -131,7 +131,9 @@ fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValue
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(
+                                    color = greenAccentDark
+                                )
                             }
                         }
                     }

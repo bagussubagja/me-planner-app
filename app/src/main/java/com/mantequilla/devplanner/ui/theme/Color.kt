@@ -11,6 +11,7 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val greenAccentDark = Color(0xFF4FD1AB)
+val greenAccentDarker = Color(0xFF318A70)
 val pinkAccentDark = Color(0xFFFFA7C4)
 val yellowAccentDark = Color(0xFFFCCB65)
 

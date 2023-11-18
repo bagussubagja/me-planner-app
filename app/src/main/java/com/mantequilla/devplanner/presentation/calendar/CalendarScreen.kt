@@ -38,6 +38,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.mabn.calendarlibrary.core.CalendarTheme
 import com.mantequilla.devplanner.R
 import com.mantequilla.devplanner.domain.item.TaskItem
 import com.mantequilla.devplanner.ui.theme.greenAccentDark
@@ -71,7 +72,18 @@ fun CalendarScreen(
             com.mabn.calendarlibrary.ExpandableCalendar(
                 onDayClick = { newDate ->
                     today = newDate.toString()
-                }
+                },
+                theme = CalendarTheme(
+                    backgroundColor = Color.White,
+                    selectedDayBackgroundColor = greenAccentDark,
+                    dayBackgroundColor = greenAccentLight,
+                    dayShape = RoundedCornerShape(12.dp),
+                    dayValueTextColor = greenAccentDark,
+                    headerBackgroundColor = Color.White,
+                    headerTextColor = Color.Black,
+                    selectedDayValueTextColor = Color.White,
+                    weekDaysTextColor = Color.Black
+                )
             )
         }
         when (state) {
@@ -86,7 +98,9 @@ fun CalendarScreen(
             is CalendarState.Loading -> {
                 item {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            color = greenAccentDark
+                        )
                     }
                 }
             }

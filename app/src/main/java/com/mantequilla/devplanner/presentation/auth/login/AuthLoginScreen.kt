@@ -15,13 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -50,6 +53,7 @@ import com.mantequilla.devplanner.R
 import com.mantequilla.devplanner.data.params.AuthParams
 import com.mantequilla.devplanner.navigation.AuthScreen
 import com.mantequilla.devplanner.navigation.Graph
+import com.mantequilla.devplanner.ui.theme.greenAccentDark
 import com.mantequilla.devplanner.ui.theme.osFontFamily
 import com.mantequilla.devplanner.utils.PreferencesManager
 import com.mantequilla.devplanner.utils.StorageKey
@@ -151,6 +155,11 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
         OutlinedTextField(
             value = emailText,
             singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                cursorColor = greenAccentDark,
+                focusedBorderColor = greenAccentDark,
+                unfocusedBorderColor = Color.Gray,
+            ),
             modifier = Modifier.fillMaxWidth(),
             onValueChange = { text ->
                 emailText = text
@@ -164,6 +173,11 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
             value = passwordText,
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                cursorColor = greenAccentDark,
+                focusedBorderColor = greenAccentDark,
+                unfocusedBorderColor = Color.Gray,
+            ),
             onValueChange = { text ->
                 passwordText = text
             },
@@ -182,17 +196,20 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
         Spacer(modifier = Modifier.height(16.dp))
         if (isLoading) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    color = greenAccentDark
+                )
             }
         } else {
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = emailText.isNotEmpty() && passwordText.isNotEmpty(),
+                colors = ButtonDefaults.buttonColors(containerColor = greenAccentDark),
                 onClick = {
                     val authParams = AuthParams(email = emailText, password = passwordText)
                     authLoginViewModel.authLogin(authParams)
                 }) {
-                Text(text = "Login")
+                Text(text = "Login", style = TextStyle(fontFamily = osFontFamily))
             }
         }
         Box(
@@ -209,11 +226,21 @@ fun LoginScreen(navHostController: NavHostController, context: Context) {
                     style = TextStyle(
                         fontFamily = osFontFamily,
                         fontWeight = FontWeight.Light,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
                     )
                 )
-                TextButton(onClick = { navHostController.navigate(AuthScreen.Register.route) }) {
-                    Text(text = "Register Here")
+                TextButton(
+                    onClick = { navHostController.navigate(AuthScreen.Register.route) },
+                ) {
+                    Text(
+                        text = "Register Here",
+                        style = TextStyle(
+                            fontFamily = osFontFamily,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            color = greenAccentDark
+                        )
+                    )
                 }
             }
         }

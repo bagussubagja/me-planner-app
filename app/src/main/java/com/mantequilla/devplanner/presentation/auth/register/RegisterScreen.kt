@@ -14,12 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +50,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mantequilla.devplanner.R
 import com.mantequilla.devplanner.data.params.AuthParams
 import com.mantequilla.devplanner.navigation.Graph
+import com.mantequilla.devplanner.ui.theme.greenAccentDark
 import com.mantequilla.devplanner.ui.theme.osFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -117,12 +121,17 @@ fun RegisterScreen(navHostController: NavHostController) {
         OutlinedTextField(
             value = emailText,
             singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                cursorColor = greenAccentDark,
+                focusedBorderColor = greenAccentDark,
+                unfocusedBorderColor = Color.Gray,
+            ),
             modifier = Modifier.fillMaxWidth(),
             onValueChange = { text ->
                 emailText = text
             },
             placeholder = {
-                Text(text = "Email Address")
+                Text(text = "Email Address", fontFamily = osFontFamily)
             }
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -130,6 +139,11 @@ fun RegisterScreen(navHostController: NavHostController) {
             value = passwordText,
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                cursorColor = greenAccentDark,
+                focusedBorderColor = greenAccentDark,
+                unfocusedBorderColor = Color.Gray,
+            ),
             onValueChange = { text ->
                 passwordText = text
             },
@@ -142,19 +156,20 @@ fun RegisterScreen(navHostController: NavHostController) {
             },
             visualTransformation = if (visiblePassword) VisualTransformation.None else PasswordVisualTransformation(),
             placeholder = {
-                Text(text = "Password")
+                Text(text = "Password", style = TextStyle(fontFamily = osFontFamily))
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             modifier = Modifier.fillMaxWidth(),
             enabled = emailText.isNotEmpty() && passwordText.isNotEmpty(),
+            colors = ButtonDefaults.buttonColors(containerColor = greenAccentDark),
             onClick = {
                 val authParams = AuthParams(email = emailText, password = passwordText)
                 registerViewModel.authRegister(authParams)
             }
         ) {
-            Text(text = "Register")
+            Text(text = "Register", style = TextStyle(fontFamily = osFontFamily))
         }
         Box(
             modifier = Modifier
@@ -176,7 +191,10 @@ fun RegisterScreen(navHostController: NavHostController) {
                 TextButton(onClick = {
                     navHostController.popBackStack()
                 }) {
-                    Text(text = "Login Here")
+                    Text(
+                        text = "Login Here",
+                        style = TextStyle(color = greenAccentDark, fontFamily = osFontFamily)
+                    )
                 }
             }
         }

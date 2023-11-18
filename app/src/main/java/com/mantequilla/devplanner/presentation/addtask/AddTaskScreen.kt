@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
@@ -21,9 +22,9 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,9 +38,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.mantequilla.devplanner.data.params.TaskParams
+import com.mantequilla.devplanner.ui.theme.greenAccentDark
+import com.mantequilla.devplanner.ui.theme.greenAccentDarker
 import com.mantequilla.devplanner.ui.theme.osFontFamily
 import com.mantequilla.devplanner.utils.Converter
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
@@ -117,7 +121,14 @@ fun AddTaskScreen(navHostController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 maxLines = 1,
-                colors = TextFieldDefaults.textFieldColors(containerColor = Color.White),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White,
+                    cursorColor = greenAccentDark,
+                    focusedBorderColor = greenAccentDark,
+                    unfocusedBorderColor = Color.Gray,
+                ),
                 textStyle = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Normal),
                 placeholder = {
                     Text(text = "Add your task title here...")
@@ -132,7 +143,14 @@ fun AddTaskScreen(navHostController: NavHostController) {
                     .fillMaxHeight(0.4f),
                 singleLine = false,
                 maxLines = 5,
-                colors = TextFieldDefaults.textFieldColors(containerColor = Color.White),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White,
+                    cursorColor = greenAccentDark,
+                    focusedBorderColor = greenAccentDark,
+                    unfocusedBorderColor = Color.Gray,
+                ),
                 textStyle = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Normal),
                 placeholder = {
                     Text(text = "Add your task description here...")
@@ -154,7 +172,14 @@ fun AddTaskScreen(navHostController: NavHostController) {
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
                     },
-                    colors = TextFieldDefaults.textFieldColors(containerColor = Color.White),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        disabledContainerColor = Color.White,
+                        cursorColor = greenAccentDark,
+                        focusedBorderColor = greenAccentDark,
+                        unfocusedBorderColor = Color.Gray,
+                    ),
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth(),
@@ -201,10 +226,20 @@ fun AddTaskScreen(navHostController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 maxLines = 1,
-                colors = TextFieldDefaults.textFieldColors(containerColor = Color.White),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White,
+                    cursorColor = greenAccentDark,
+                    focusedBorderColor = greenAccentDark,
+                    unfocusedBorderColor = Color.Gray,
+                ),
                 textStyle = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Normal),
                 placeholder = {
-                    Text(text = "Insert your tags here, separated by commas...")
+                    Text(
+                        text = "Insert your tags here, separated by commas...",
+                        style = TextStyle(fontFamily = osFontFamily, fontSize = 12.sp)
+                    )
                 })
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -212,10 +247,16 @@ fun AddTaskScreen(navHostController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ElevatedButton(onClick = { calendarState.show() }) {
-                    Text(text = "Date Picker")
+                ElevatedButton(
+                    onClick = { calendarState.show() },
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = greenAccentDark,
+                        contentColor = Color.White
+                    ),
+                ) {
+                    Text(text = "Date Picker", style = TextStyle(fontFamily = osFontFamily))
                 }
-                Text(text = "$calendarDate")
+                Text(text = "$calendarDate", style = TextStyle(fontFamily = osFontFamily))
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(
@@ -223,13 +264,23 @@ fun AddTaskScreen(navHostController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ElevatedButton(onClick = { timeState.show() }) {
-                    Text(text = "Time Picker")
+                ElevatedButton(
+                    onClick = { timeState.show() },
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = greenAccentDark,
+                        contentColor = Color.White
+                    ),
+                ) {
+                    Text(text = "Time Picker", style = TextStyle(fontFamily = osFontFamily))
                 }
-                Text(text = "$clockTime")
+                Text(text = clockTime, style = TextStyle(fontFamily = osFontFamily))
             }
             Spacer(modifier = Modifier.height(12.dp))
             ElevatedButton(
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = greenAccentDarker,
+                    contentColor = Color.White
+                ),
                 onClick = {
                     val taskParams = TaskParams(
                         user_id = addTaskViewModel.userId.value,
