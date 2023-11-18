@@ -1,7 +1,9 @@
 package com.mantequilla.devplanner.presentation.addtask
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -39,7 +42,15 @@ import androidx.navigation.NavHostController
 import com.mantequilla.devplanner.data.params.TaskParams
 import com.mantequilla.devplanner.ui.theme.osFontFamily
 import com.mantequilla.devplanner.utils.Converter
+import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.maxkeppeler.sheets.clock.ClockDialog
+import com.maxkeppeler.sheets.clock.models.ClockConfig
+import com.maxkeppeler.sheets.clock.models.ClockSelection
+import java.time.LocalDate
 import java.time.LocalTime
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +63,7 @@ fun AddTaskScreen(navHostController: NavHostController) {
     val addTaskViewModel: AddTaskViewModel = hiltViewModel()
     val state by addTaskViewModel.state.collectAsState()
     LaunchedEffect(key1 = state) {
-        when(state) {
+        when (state) {
             is AddTaskState.ErrorPostData -> {}
             is AddTaskState.Loading -> {}
             is AddTaskState.SuccessPostData -> {
@@ -60,6 +71,21 @@ fun AddTaskScreen(navHostController: NavHostController) {
             }
         }
     }
+    val calendarState = rememberSheetState()
+    var calendarDate by remember { mutableStateOf(LocalDate.now()) }
+    CalendarDialog(
+        state = calendarState,
+        selection = CalendarSelection.Date { date -> calendarDate = date })
+    val timeState = rememberSheetState()
+    var clockTime by remember { mutableStateOf(Converter.formatTime(LocalTime.now())) }
+    ClockDialog(
+        state = timeState,
+        config = ClockConfig(
+            is24HourFormat = true
+        ),
+        selection = ClockSelection.HoursMinutes { hours, minutes ->
+            clockTime = String.format("%02d:%02d", hours, minutes)
+        })
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -181,6 +207,28 @@ fun AddTaskScreen(navHostController: NavHostController) {
                     Text(text = "Insert your tags here, separated by commas...")
                 })
             Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ElevatedButton(onClick = { calendarState.show() }) {
+                    Text(text = "Date Picker")
+                }
+                Text(text = "$calendarDate")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ElevatedButton(onClick = { timeState.show() }) {
+                    Text(text = "Time Picker")
+                }
+                Text(text = "$clockTime")
+            }
+            Spacer(modifier = Modifier.height(12.dp))
             ElevatedButton(
                 onClick = {
                     val taskParams = TaskParams(
@@ -188,8 +236,8 @@ fun AddTaskScreen(navHostController: NavHostController) {
                         title = titleText,
                         desc = descText,
                         tag = tagTask.split(", "),
-                        time = Converter.formatTime(LocalTime.now()),
-                        date = Converter.getCurrentDate(),
+                        time = clockTime,
+                        date = calendarDate.toString(),
                         priority = priorityTask
                     )
                     addTaskViewModel.addTask(taskParams)

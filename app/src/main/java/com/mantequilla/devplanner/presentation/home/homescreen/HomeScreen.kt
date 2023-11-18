@@ -1,6 +1,5 @@
 package com.mantequilla.devplanner.presentation.home.homescreen
 
-import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,19 +17,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.gson.Gson
 import com.mantequilla.devplanner.domain.item.TaskItem
 import com.mantequilla.devplanner.navigation.ContentScreen
+import com.mantequilla.devplanner.navigation.Graph
 import com.mantequilla.devplanner.navigation.models.TaskModelNav
 import com.mantequilla.devplanner.ui.theme.greenAccentDark
 import com.mantequilla.devplanner.ui.theme.greenAccentLight
@@ -51,7 +53,6 @@ import com.mantequilla.devplanner.ui.theme.pinkAccentLight
 import com.mantequilla.devplanner.ui.theme.yellowAccentDark
 import com.mantequilla.devplanner.ui.theme.yellowAccentLight
 import com.mantequilla.devplanner.utils.Converter
-import com.mantequilla.devplanner.utils.PreferencesManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +62,7 @@ fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValue
     val isLoading by homeViewModel.isLoading.collectAsState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
     LaunchedEffect(key1 = homeState) {
-       homeViewModel.getData()
+        homeViewModel.getData()
     }
     Scaffold {
         SwipeRefresh(
@@ -75,7 +76,7 @@ fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValue
                     .padding(paddingValues)
             ) {
                 item {
-                    HeaderSection(navHostController)
+                    HeaderSection(navHostController, homeViewModel)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -280,13 +281,28 @@ private fun CardTodoList(
 }
 
 @Composable
-private fun HeaderSection(navHostController: NavHostController) {
-    Text(
-        text = "Dev Planner",
-        style = TextStyle(
-            fontFamily = osFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 28.sp
+private fun HeaderSection(
+    navHostController: NavHostController,
+    homeScreenViewModel: HomeScreenViewModel
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Dev Planner",
+            style = TextStyle(
+                fontFamily = osFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 28.sp
+            )
         )
-    )
+        IconButton(onClick = {
+            homeScreenViewModel.logout()
+            navHostController.navigate(Graph.AUTHENTICATION)
+        }) {
+            Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "")
+        }
+    }
 }

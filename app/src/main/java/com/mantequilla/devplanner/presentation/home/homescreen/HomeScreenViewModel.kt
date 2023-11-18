@@ -31,6 +31,10 @@ class HomeScreenViewModel @Inject constructor(
         getData()
     }
 
+    fun logout () {
+        preferencesManager.clearAllPreferences()
+    }
+
     fun getData() {
         getTasksData(
             "*",
