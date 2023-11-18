@@ -17,4 +17,8 @@ class TaskRepository @Inject constructor(private val services: Services) {
     suspend fun addTask(taskParams: TaskParams): ResponseBody {
         return services.addTask(taskParams)
     }
+
+    suspend fun updateTask(taskParams: TaskParams, id: String): Int {
+        return services.updateTask(taskParams, id)
+    }
 }

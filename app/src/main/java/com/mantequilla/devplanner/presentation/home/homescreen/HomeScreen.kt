@@ -1,6 +1,7 @@
 package com.mantequilla.devplanner.presentation.home.homescreen
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,8 +39,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.gson.Gson
 import com.mantequilla.devplanner.domain.item.TaskItem
 import com.mantequilla.devplanner.navigation.ContentScreen
+import com.mantequilla.devplanner.navigation.models.TaskModelNav
 import com.mantequilla.devplanner.ui.theme.greenAccentDark
 import com.mantequilla.devplanner.ui.theme.greenAccentLight
 import com.mantequilla.devplanner.ui.theme.osFontFamily
@@ -135,8 +138,11 @@ fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValue
                         } else {
                             items(tasks) { task ->
                                 CardTodoList(
+                                    task.id!!,
+                                    task.user_id!!,
                                     task.priority!!,
                                     task.title!!,
+                                    task.desc!!,
                                     task.time!!,
                                     task.tag!!,
                                     navHostController
@@ -152,8 +158,11 @@ fun HomeScreen(navHostController: NavHostController, paddingValues: PaddingValue
 
 @Composable
 private fun CardTodoList(
+    id: Int,
+    userId: String,
     priority: String,
     title: String,
+    desc: String,
     time: String,
     tag: List<String?>,
     navHostController: NavHostController
@@ -181,7 +190,9 @@ private fun CardTodoList(
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .clickable {
-                navHostController.navigate(ContentScreen.DetailScreen.route)
+                val task = TaskModelNav(id, userId, title, desc, priority, tag)
+                val taskData = Uri.encode(Gson().toJson(task))
+                navHostController.navigate("${ContentScreen.DetailScreen.route}/$taskData")
             }
             .background(getBackgroundColor(priority), shape = RoundedCornerShape(12.dp))
     ) {

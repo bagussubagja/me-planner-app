@@ -178,7 +178,7 @@ fun AddTaskScreen(navHostController: NavHostController) {
                 colors = TextFieldDefaults.textFieldColors(containerColor = Color.White),
                 textStyle = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Normal),
                 placeholder = {
-                    Text(text = "Add your tag task here...")
+                    Text(text = "Insert your tags here, separated by commas...")
                 })
             Spacer(modifier = Modifier.height(12.dp))
             ElevatedButton(

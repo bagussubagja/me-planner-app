@@ -47,7 +47,6 @@ fun Home(navHostController: NavHostController = rememberNavController()) {
         content = { innerPadding ->
             AppNavGraph(
                 navHostController = navHostController,
-                modifier = Modifier.padding(innerPadding),
                 context,
                 innerPadding
             )

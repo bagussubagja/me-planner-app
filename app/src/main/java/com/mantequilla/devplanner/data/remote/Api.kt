@@ -11,6 +11,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -43,4 +44,11 @@ interface Api {
     suspend fun addTask(
         @Body taskParams: TaskParams
     ) : Response<ResponseBody>
+
+    @PATCH(Constants.TASK_ENDPOINT)
+    @Headers("apikey: ${Constants.API_KEY}")
+    suspend fun updateTask(
+        @Body taskParams: TaskParams,
+        @Query("id") id: String
+    ) : Response<Int>
 }

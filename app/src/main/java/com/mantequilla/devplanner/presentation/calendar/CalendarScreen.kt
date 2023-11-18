@@ -54,7 +54,7 @@ fun CalendarScreen(navHostController: NavHostController, context: Context, paddi
     val state by calendarViewModel.state.collectAsState()
     var today by remember { mutableStateOf(Converter.getCurrentDate()) }
     LaunchedEffect(key1 = today) {
-        calendarViewModel.getData()
+        calendarViewModel.refreshData(today)
     }
     LazyColumn (
         modifier = Modifier.padding(paddingValues)

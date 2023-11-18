@@ -32,6 +32,15 @@ class CalendarViewModel @Inject constructor(
         getData()
     }
 
+    fun refreshData(date: String) {
+        getTasksData(
+            "*",
+            "eq.${preferencesManager.getIdUserInfo(StorageKey.userId, "")}",
+            "eq.$date",
+            "time.asc"
+        )
+    }
+
     fun getData() {
         getTasksData(
             "*",

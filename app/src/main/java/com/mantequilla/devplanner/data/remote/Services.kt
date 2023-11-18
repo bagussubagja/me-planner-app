@@ -38,4 +38,11 @@ class Services @Inject constructor(private val api: Api) {
             task.body()!!
         }
     }
+
+    suspend fun updateTask(taskParams: TaskParams, id: String) : Int {
+        return withContext(Dispatchers.IO) {
+            val updatedTask = api.updateTask(taskParams, id)
+            updatedTask.code()
+        }
+    }
 }

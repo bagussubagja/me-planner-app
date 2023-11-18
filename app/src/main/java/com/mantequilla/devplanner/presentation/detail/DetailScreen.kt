@@ -1,5 +1,6 @@
 package com.mantequilla.devplanner.presentation.detail
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.mantequilla.devplanner.data.params.TaskParams
+import com.mantequilla.devplanner.navigation.models.TaskModelNav
 import com.mantequilla.devplanner.presentation.addtask.AddTaskState
 import com.mantequilla.devplanner.presentation.addtask.AddTaskViewModel
 import com.mantequilla.devplanner.ui.theme.osFontFamily
@@ -45,19 +47,19 @@ import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(navHostController: NavHostController) {
-    var titleText by remember { mutableStateOf("") }
-    var descText by remember { mutableStateOf("") }
+fun DetailScreen(navHostController: NavHostController, taskParams: TaskModelNav) {
+    var titleText by remember { mutableStateOf(taskParams.title) }
+    var descText by remember { mutableStateOf(taskParams.desc) }
     var isExpanded by remember { mutableStateOf(false) }
-    var priorityTask by remember { mutableStateOf("Select task priority...") }
-    var tagTask by remember { mutableStateOf("") }
-    val addTaskViewModel: AddTaskViewModel = hiltViewModel()
-    val state by addTaskViewModel.state.collectAsState()
-    LaunchedEffect(key1 = state) {
-        when(state) {
-            is AddTaskState.ErrorPostData -> {}
-            is AddTaskState.Loading -> {}
-            is AddTaskState.SuccessPostData -> {
+    var priorityTask by remember { mutableStateOf(taskParams.priority) }
+    var tagTask by remember { mutableStateOf(taskParams.tag?.joinToString(", ")) }
+    val detailViewModel: DetailViewModel = hiltViewModel()
+    val detailState by detailViewModel.state.collectAsState()
+    LaunchedEffect(key1 = detailState) {
+        when(detailState) {
+            is DetailState.ErrorUpdateData -> {}
+            is DetailState.Loading -> {}
+            is DetailState.SuccessUpdateData -> {
                 navHostController.popBackStack()
             }
         }
@@ -66,7 +68,7 @@ fun DetailScreen(navHostController: NavHostController) {
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text("Add Task")
+                    Text("Detail Task")
                 },
                 navigationIcon = {
                     IconButton(onClick = { navHostController.popBackStack() }) {
@@ -86,7 +88,8 @@ fun DetailScreen(navHostController: NavHostController) {
                 .padding(it)
                 .padding(horizontal = 8.dp)
         ) {
-            OutlinedTextField(value = titleText,
+            OutlinedTextField(
+                value = titleText!!,
                 onValueChange = { newText ->
                     titleText = newText
                 },
@@ -96,10 +99,10 @@ fun DetailScreen(navHostController: NavHostController) {
                 colors = TextFieldDefaults.textFieldColors(containerColor = Color.White),
                 textStyle = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Normal),
                 placeholder = {
-                    Text(text = "Add your task title here...")
+                    Text(text = "Edit your task title here...")
                 })
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(value = descText,
+            OutlinedTextField(value = descText!!,
                 onValueChange = { newText ->
                     descText = newText
                 },
@@ -111,7 +114,7 @@ fun DetailScreen(navHostController: NavHostController) {
                 colors = TextFieldDefaults.textFieldColors(containerColor = Color.White),
                 textStyle = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Normal),
                 placeholder = {
-                    Text(text = "Add your task description here...")
+                    Text(text = "Edit your task description here...")
                 })
             Spacer(modifier = Modifier.height(8.dp))
             ExposedDropdownMenuBox(
@@ -120,7 +123,7 @@ fun DetailScreen(navHostController: NavHostController) {
                 modifier = Modifier.background(Color.White)
             ) {
                 OutlinedTextField(
-                    value = priorityTask,
+                    value = priorityTask!!,
                     onValueChange = {},
                     readOnly = true,
                     textStyle = TextStyle(
@@ -170,7 +173,7 @@ fun DetailScreen(navHostController: NavHostController) {
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(value = tagTask,
+            OutlinedTextField(value = tagTask!!,
                 onValueChange = { newText ->
                     tagTask = newText
                 },
@@ -180,29 +183,29 @@ fun DetailScreen(navHostController: NavHostController) {
                 colors = TextFieldDefaults.textFieldColors(containerColor = Color.White),
                 textStyle = TextStyle(fontFamily = osFontFamily, fontWeight = FontWeight.Normal),
                 placeholder = {
-                    Text(text = "Add your tag task here...")
+                    Text(text = "Insert your tags here, separated by commas..")
                 })
             Spacer(modifier = Modifier.height(12.dp))
             ElevatedButton(
                 onClick = {
-                    val taskParams = TaskParams(
-                        user_id = addTaskViewModel.userId.value,
-                        title = titleText,
-                        desc = descText,
-                        tag = tagTask.split(", "),
+                    val taskParamsData = TaskParams(
+                        user_id = taskParams.user_id,
+                        title = titleText!!,
+                        desc = descText!!,
+                        tag = tagTask!!.split(", "),
                         time = Converter.formatTime(LocalTime.now()),
                         date = Converter.getCurrentDate(),
-                        priority = priorityTask
+                        priority = priorityTask!!
                     )
-                    addTaskViewModel.addTask(taskParams)
+                    detailViewModel.updateTask(taskParamsData, "eq.${taskParams.id}")
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = titleText.isNotBlank()
-                        && descText.isNotBlank()
+                enabled = titleText!!.isNotBlank()
+                        && descText!!.isNotBlank()
                         && priorityTask != "Select task priority..."
-                        && tagTask.isNotBlank()
+                        && tagTask!!.isNotBlank()
             ) {
-                Text(text = "Create Task", style = TextStyle(fontFamily = osFontFamily))
+                Text(text = "Update Task", style = TextStyle(fontFamily = osFontFamily))
             }
         }
     }

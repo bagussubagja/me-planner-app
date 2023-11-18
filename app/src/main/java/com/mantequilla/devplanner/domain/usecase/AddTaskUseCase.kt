@@ -16,7 +16,6 @@ class AddTaskUseCase @Inject constructor(private val taskRepository: TaskReposit
             taskRepository.addTask(taskParams)
             emit(AddTaskState.success(201))
         } catch (e: Exception) {
-            Log.d("error add task", "${e.printStackTrace()}")
             emit(AddTaskState.failed(e))
         }
     }
